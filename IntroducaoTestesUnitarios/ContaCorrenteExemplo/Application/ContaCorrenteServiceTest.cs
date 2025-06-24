@@ -1,6 +1,7 @@
 ﻿using AutoFixture;
 using Implementations.ContaCorrenteExemplo.Domain;
 using Implementations.ContaCorrenteExemplo.Infraestructure.Interfaces;
+using Implementations.ContaCorrenteExemplo.Infraestructure.Models;
 using Implementations.ContaCorrenteExemplo.Infraestructure.Services;
 using IntroducaoTestesUnitarios.ContaCorrenteExemplo.Factories;
 using Moq;
@@ -9,29 +10,29 @@ namespace IntroducaoTestesUnitarios.ContaCorrenteExemplo.Application
 {
     public class ContaCorrenteServiceTest
     {
+        Mock<IContaCorrenteRepository> contaCorrenteRepositoryMock = new();
+        Mock<INotificacaoService> notificacaoServiceMock = new();
+
         [Fact]
         public void ContaExistenteNotificacaoFuncionando_ChamadoDocumentoValido_RetornarSucesso()
         {
             // Arrange
-            var fixture = new Fixture();
-            var contaCorrente = fixture.Create<ContaCorrente>();
+            Fixture fixture = new Fixture();
+            ContaCorrente contaCorrente = fixture.Create<ContaCorrente>();
             // ANTES: var contaCorrente = ContaCorrenteFactory.GetContaOrigemValida();
 
             fixture.RepeatCount = 5;
-            var operacoes = fixture.CreateMany<Operacao>().ToList();
+            List<Operacao> operacoes = fixture.CreateMany<Operacao>().ToList();
 
-            var respostaNotificacaoViewModel = RespostaNotificacaoViewModelFactory.ObterRespostaSucesso();
-
-            var contaCorrenteRepositoryMock = new Mock<IContaCorrenteRepository>();
-            var notificacaoServiceMock = new Mock<INotificacaoService>();
+            RespostaNotificacaoViewModel respostaNotificacaoViewModel = RespostaNotificacaoViewModelFactory.ObterRespostaSucesso();
 
             contaCorrenteRepositoryMock.Setup(ccr => ccr.ObterPorDocumento(contaCorrente.Documento)).Returns(contaCorrente);
             notificacaoServiceMock.Setup(ns => ns.Notificar(contaCorrente)).Returns(respostaNotificacaoViewModel);
 
-            var contaCorrenteService = new ContaCorrenteService(notificacaoServiceMock.Object, contaCorrenteRepositoryMock.Object);
+            ContaCorrenteService contaCorrenteService = new ContaCorrenteService(notificacaoServiceMock.Object, contaCorrenteRepositoryMock.Object);
 
             // Act
-            var resposta = contaCorrenteService.NotificarContaCorrente(contaCorrente.Documento);
+            bool resposta = contaCorrenteService.NotificarContaCorrente(contaCorrente.Documento);
 
             // Assert
             contaCorrenteRepositoryMock.Verify(ccr => ccr.ObterPorDocumento(contaCorrente.Documento), Times.Once);
@@ -44,20 +45,17 @@ namespace IntroducaoTestesUnitarios.ContaCorrenteExemplo.Application
         public void ContaExistenteMasNotificacaoNaoFuncionando_ChamadoDocumentoValido_RetornarFalha()
         {
             // Arrange
-            var fixture = new Fixture();
-            var contaCorrente = fixture.Create<ContaCorrente>();
-            var respostaNotificacaoViewModel = RespostaNotificacaoViewModelFactory.ObterRespostaFalha();
-
-            var contaCorrenteRepositoryMock = new Mock<IContaCorrenteRepository>();
-            var notificacaoServiceMock = new Mock<INotificacaoService>();
+            Fixture fixture = new Fixture();
+            ContaCorrente contaCorrente = fixture.Create<ContaCorrente>();
+            RespostaNotificacaoViewModel respostaNotificacaoViewModel = RespostaNotificacaoViewModelFactory.ObterRespostaFalha();
 
             contaCorrenteRepositoryMock.Setup(ccr => ccr.ObterPorDocumento(contaCorrente.Documento)).Returns(contaCorrente);
             notificacaoServiceMock.Setup(ns => ns.Notificar(contaCorrente)).Returns(respostaNotificacaoViewModel);
 
-            var contaCorrenteService = new ContaCorrenteService(notificacaoServiceMock.Object, contaCorrenteRepositoryMock.Object);
+            ContaCorrenteService contaCorrenteService = new ContaCorrenteService(notificacaoServiceMock.Object, contaCorrenteRepositoryMock.Object);
 
             // Act
-            var resposta = contaCorrenteService.NotificarContaCorrente(contaCorrente.Documento);
+            bool resposta = contaCorrenteService.NotificarContaCorrente(contaCorrente.Documento);
 
             // Assert
             contaCorrenteRepositoryMock.Verify(ccr => ccr.ObterPorDocumento(contaCorrente.Documento), Times.Once);
@@ -77,16 +75,20 @@ namespace IntroducaoTestesUnitarios.ContaCorrenteExemplo.Application
 
 
             // Arrange
-            var contaCorrenteOrigem = ContaCorrenteFactory.GetContaOrigemValida();
-            var contaCorrenteDestino = ContaCorrenteFactory.ObterContaDestinoValida();
 
-            var contaCorrenteRepositoryMock = new Mock<IContaCorrenteRepository>();
-            var notificacaoServiceMock = new Mock<INotificacaoService>();
+            //ANTES
+            //var contaCorrenteOrigem = ContaCorrenteFactory.GetContaOrigemValida();
+            //var contaCorrenteDestino = ContaCorrenteFactory.ObterContaDestinoValida();
 
-            var operacaoFinanceiraService = new ContaCorrenteService(notificacaoServiceMock.Object, contaCorrenteRepositoryMock.Object);
+            Fixture fixture = new Fixture();
+
+            ContaCorrente contaCorrenteOrigem = fixture.Create<ContaCorrente>();
+            ContaCorrente contaCorrenteDestino = fixture.Create<ContaCorrente>();
+
+            ContaCorrenteService operacaoFinanceiraService = new ContaCorrenteService(notificacaoServiceMock.Object, contaCorrenteRepositoryMock.Object);
 
             // Act
-            var resultadoOperacao = operacaoFinanceiraService.Transferencia(contaCorrenteOrigem, contaCorrenteDestino, valorTransacao);
+            bool resultadoOperacao = operacaoFinanceiraService.Transferencia(contaCorrenteOrigem, contaCorrenteDestino, valorTransacao);
 
             // Assert
             Assert.True(resultadoOperacao);
@@ -106,16 +108,20 @@ namespace IntroducaoTestesUnitarios.ContaCorrenteExemplo.Application
             const decimal contaCorrenteDestinoLimiteEsperado = 20000;
 
             // Arrange
-            var contaCorrenteOrigem = ContaCorrenteFactory.GetContaOrigemValida();
-            var contaCorrenteDestino = ContaCorrenteFactory.ObterContaDestinoValida();
 
-            var contaCorrenteRepositoryMock = new Mock<IContaCorrenteRepository>();
-            var notificacaoServiceMock = new Mock<INotificacaoService>();
+            //ANTES
+            //var contaCorrenteOrigem = ContaCorrenteFactory.GetContaOrigemValida();
+            //var contaCorrenteDestino = ContaCorrenteFactory.ObterContaDestinoValida();
 
-            var operacaoFinanceiraService = new ContaCorrenteService(notificacaoServiceMock.Object, contaCorrenteRepositoryMock.Object);
+            Fixture fixture = new Fixture();
+
+            ContaCorrente contaCorrenteOrigem = fixture.Create<ContaCorrente>();
+            ContaCorrente contaCorrenteDestino = fixture.Create<ContaCorrente>();
+
+            ContaCorrenteService operacaoFinanceiraService = new ContaCorrenteService(notificacaoServiceMock.Object, contaCorrenteRepositoryMock.Object);
 
             // Act
-            var resultadoOperacao = operacaoFinanceiraService.Transferencia(contaCorrenteOrigem, contaCorrenteDestino, valorTransacaoAcimaDoSaldoInicial);
+            bool resultadoOperacao = operacaoFinanceiraService.Transferencia(contaCorrenteOrigem, contaCorrenteDestino, valorTransacaoAcimaDoSaldoInicial);
 
             // Assert
             Assert.False(resultadoOperacao);

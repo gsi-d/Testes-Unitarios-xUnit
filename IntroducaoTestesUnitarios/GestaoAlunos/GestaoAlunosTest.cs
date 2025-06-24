@@ -11,20 +11,21 @@ namespace IntroducaoTestesUnitarios.GestaoAlunos
 {
     public class GestaoAlunosTest
     {
+        public Mock<IAlunoRepository> StudentRepositoryMock = new();
+        public Mock<IErpService> ErpIntegrationService = new();
+
         [Fact]
         public async Task ValidaAluno_ViaMediator_RetornaAlunoResponseValido()
         {
             // Arrange
-            var addAluno = new Fixture().Create<AlunoRequest>();
+            AlunoRequest addAluno = new Fixture().Create<AlunoRequest>();
 
-            var studentRepositoryMock = new Mock<IAlunoRepository>();
-            var erpIntegrationService = new Mock<IErpService>();
-            erpIntegrationService.Setup(e => e.SyncStudent(It.IsAny<ErpAluno>())).Returns(Task.FromResult(true));
+            ErpIntegrationService.Setup(e => e.SyncStudent(It.IsAny<ErpAluno>())).Returns(Task.FromResult(true));
 
-            var addAlunoHandler = new AddAlunoHandler(studentRepositoryMock.Object, erpIntegrationService.Object);
+            AddAlunoHandler addAlunoHandler = new AddAlunoHandler(StudentRepositoryMock.Object, ErpIntegrationService.Object);
 
             // Act
-            var result = await addAlunoHandler.Handle(addAluno, new CancellationToken());
+            AlunoResponse result = await addAlunoHandler.Handle(addAluno, new CancellationToken());
 
             // Assert
             result.FullName.ShouldBe(addAluno.FullName);
@@ -32,8 +33,8 @@ namespace IntroducaoTestesUnitarios.GestaoAlunos
             result.Class.ShouldBe(addAluno.Class);
             result.BirthDate.ShouldBe(addAluno.BirthDate);
 
-            studentRepositoryMock.Verify(s => s.AddAsync(It.IsAny<Aluno>()), Times.Once);
-            erpIntegrationService.Verify(s => s.SyncStudent(It.IsAny<ErpAluno>()), Times.Once);
+            StudentRepositoryMock.Verify(s => s.AddAsync(It.IsAny<Aluno>()), Times.Once);
+            ErpIntegrationService.Verify(s => s.SyncStudent(It.IsAny<ErpAluno>()), Times.Once);
         }
     }
 }

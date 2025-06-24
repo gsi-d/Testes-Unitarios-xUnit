@@ -60,7 +60,7 @@ namespace IntroducaoTestesUnitarios.CalculadoraFinanceira
 
             //Act
 
-            var exception = Assert.Throws<ArgumentException>(() => _serviceCalculadoraFinanceira.CalcularJurosCompostos(principal, taxa, periodo));
+            ArgumentException exception = Assert.Throws<ArgumentException>(() => _serviceCalculadoraFinanceira.CalcularJurosCompostos(principal, taxa, periodo));
 
             //Assert
 
@@ -81,7 +81,7 @@ namespace IntroducaoTestesUnitarios.CalculadoraFinanceira
             const decimal taxaDeConversao = 5.25m;
 
             //Act
-            var exception = Assert.Throws<ArgumentException>(() => _serviceCalculadoraFinanceira.ConverterMoeda(valor, taxaDeConversao));
+            ArgumentException exception = Assert.Throws<ArgumentException>(() => _serviceCalculadoraFinanceira.ConverterMoeda(valor, taxaDeConversao));
 
             //Assert
             Assert.Equal("Valor e taxa de conversão devem ser positivos.", exception.Message);
@@ -99,7 +99,7 @@ namespace IntroducaoTestesUnitarios.CalculadoraFinanceira
             const decimal percentualDesconto = 110;
 
             //Act
-            var exception = Assert.Throws<ArgumentException>(() => _serviceCalculadoraFinanceira.CalcularDesconto(valorOriginal, percentualDesconto));
+            ArgumentException exception = Assert.Throws<ArgumentException>(() => _serviceCalculadoraFinanceira.CalcularDesconto(valorOriginal, percentualDesconto));
 
             //Assert
             Assert.Equal("Valores inválidos para o desconto.", exception.Message);
@@ -125,7 +125,7 @@ namespace IntroducaoTestesUnitarios.CalculadoraFinanceira
                 .Returns(esperado);
 
             // Act
-            var resultado = _serviceCalculadoraFinanceira.SomarValores(a, b);
+            int resultado = _serviceCalculadoraFinanceira.SomarValores(a, b);
 
             // Assert
             Assert.Equal(esperado, resultado);
@@ -145,7 +145,7 @@ namespace IntroducaoTestesUnitarios.CalculadoraFinanceira
                 .ReturnsAsync(esperado);
 
             // Act
-            var resultado = await _serviceCalculadoraFinanceira.CalcularDivisaoAsync(numerador, denominador);
+            int resultado = await _serviceCalculadoraFinanceira.CalcularDivisaoAsync(numerador, denominador);
 
             // Assert
             Assert.Equal(esperado, resultado);
@@ -167,7 +167,7 @@ namespace IntroducaoTestesUnitarios.CalculadoraFinanceira
                 .Returns(esperado);
 
             // Act
-            var resultado = _serviceCalculadoraFinanceira.VerificarSeEhPar(numero);
+            bool resultado = _serviceCalculadoraFinanceira.VerificarSeEhPar(numero);
 
             // Assert
             Assert.Equal(esperado, resultado);
@@ -187,7 +187,7 @@ namespace IntroducaoTestesUnitarios.CalculadoraFinanceira
                 .Returns(esperado);
 
             // Act
-            var resultado = _serviceCalculadoraFinanceira.CalcularJurosCompostos(principal, taxa, periodo);
+            decimal resultado = _serviceCalculadoraFinanceira.CalcularJurosCompostos(principal, taxa, periodo);
 
             // Assert
             Assert.Equal(esperado, resultado);
@@ -210,7 +210,7 @@ namespace IntroducaoTestesUnitarios.CalculadoraFinanceira
                 .Returns(esperado);
 
             // Act
-            var resultado = _serviceCalculadoraFinanceira.ConverterMoeda(valor, taxaDeConversao);
+            decimal resultado = _serviceCalculadoraFinanceira.ConverterMoeda(valor, taxaDeConversao);
 
             // Assert
             Assert.Equal(esperado, resultado);
@@ -232,7 +232,7 @@ namespace IntroducaoTestesUnitarios.CalculadoraFinanceira
                 .Returns(esperado);
 
             // Act
-            var resultado = _serviceCalculadoraFinanceira.CalcularDesconto(valorOriginal, percentualDesconto);
+            decimal resultado = _serviceCalculadoraFinanceira.CalcularDesconto(valorOriginal, percentualDesconto);
 
             // Assert
             Assert.Equal(esperado, resultado);
@@ -243,26 +243,5 @@ namespace IntroducaoTestesUnitarios.CalculadoraFinanceira
                    It.IsAny<decimal>()), Times.Once);
         }
         #endregion
-
-        [Theory]
-        [InlineData(5, 5, 10)]
-        public void Dado_Quando_Entao2(int a, int b, int esperado)
-        {
-            // Arrange
-
-            // Act
-
-            // Assert
-        }
-
-        [Fact]
-        public void Dado_Quando_Entao()
-        {
-            //Arrange
-
-            //Act
-
-            //Assert
-        }
     }
 }
